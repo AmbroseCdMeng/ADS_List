@@ -1,0 +1,1052 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+//单链表   双向链表   循环链表
+
+namespace _01.List {
+    class Program {
+        static void Main(string[] args) {
+            //Test01 倒置
+            //LinkList<int> linkList = new LinkList<int>();
+            //linkList.Append(9);
+            //linkList.Append(7);
+            //linkList.Append(0);
+            //linkList.Reverse();
+
+
+            //Test02  合并
+            //LinkList<int> linkList1 = new LinkList<int>();
+            //linkList1.Append(3);
+            //linkList1.Append(7);
+            //linkList1.Append(9);
+            //LinkList<int> linkList2 = new LinkList<int>();
+            //linkList2.Append(2);
+            //linkList2.Append(6);
+            //LinkList<int> linkList3 = new LinkList<int>();
+            //linkList3 = Merge_Head(linkList1, linkList2);
+
+
+            //Test03  去重
+            //LinkList<int> linkList1 = new LinkList<int>();
+            //linkList1.Append(5);
+            //linkList1.Append(2);
+            //linkList1.Append(7);
+            //linkList1.Append(5);
+            //linkList1 = linkList1.Purge();
+
+            //本例中GetElem、Delet等方法中，索引均设置为从1开始，并非0开始
+            //for (int i = 1; i <= linkList1.GetLength(); i++) {
+            //    Console.WriteLine(linkList1.GetElem(i));
+            //}
+
+
+            //Test04  双链表
+            //DbLinkList<int> dbLinkList1 = new DbLinkList<int>();
+            //dbLinkList1.Append(3);
+            //dbLinkList1.Append(9);
+            //dbLinkList1.Append(1);
+            //dbLinkList1.Append(7);
+            //dbLinkList1.Reverse();
+
+
+            //Test05 循环链表
+            //LoopLinkList<int> loopLinkList = new LoopLinkList<int>();
+            //loopLinkList.Append(1);
+            //loopLinkList.Append(2);
+            //loopLinkList.Append(3);
+            //Console.WriteLine(loopLinkList.Locate(3));
+            //Console.WriteLine(b);
+
+            //Test06  约瑟夫环  以总数为20，间隔为3为例。Error
+
+
+            Console.ReadLine();
+        }
+    }
+
+    /*
+     * 附加的一些方法
+     * */
+    public class Function_Append {
+        /*
+         建立单链表：
+            在单链表的头部插入结点
+                建立单链表从空表开始，每读入一个数据元素就申请一个结点，然后插在链表头部。
+                因为是链表头部插入，所以读入数据的顺序是和链表中的逻辑顺序是相反的
+         */
+        LinkList<int> CreateLListHead() {
+            int d;
+            LinkList<int> L = new LinkList<int>();
+            d = Int32.Parse(Console.ReadLine());
+            while (d != -1) {
+                Node<int> p = new Node<int>(d);
+                p.Next = L.Head;
+                L.Head = p;
+                d = Int32.Parse(Console.ReadLine());
+            }
+            return L;
+        }
+
+        /*
+         建立单链表：
+            在单链表尾部插入结点
+                头部插入结点的方法虽然简单，但毕竟读入的顺序与生成链表中元素的顺序是相反的，
+                若需要顺序一致，则需要采用尾部插入的方法，
+                因为每次都是将新的结点插入到链表尾部，所以需要加入一个引用R用来始终指向链表中的尾结点，以便能够将新的结点插入到链表尾部
+         */
+        LinkList<int> CreateLListTail() {
+            Node<int> R = new Node<int>();
+            int d;
+            LinkList<int> L = new LinkList<int>();
+            R = L.Head;
+            d = Int32.Parse(Console.ReadLine());
+            while (d != -1) {
+                Node<int> p = new Node<int>(d);
+                if (L.Head == null) {
+                    L.Head = p;
+                } else {
+                    R.Next = p;
+                }
+                R = p;
+                d = Int32.Parse(Console.ReadLine());
+            }
+            if (R != null) {
+                R.Next = null;
+            }
+            return L;
+        }
+
+        /*
+         * 合并单链表：(尾部合并，从小到大)
+         * 题目要求：
+         *      有数据类型为整形的单链表Ha和Hb，其数据元素均按从小到大的升序排列，编写一个算法将他们合并成一个表Hc，
+         *      要求Hc中结点的值也是升序排列。
+	     * 算法思路：
+         *      把Ha的头结点作为Hc的头结点，依次扫描Ha和Hb的结点，比较Ha和Hb当前结点数据域的值，
+         *      将较小的值得结点附加到Hc的末尾，如此直到一个单链表被扫描完，
+         *      然后将未完的那个单链表中余下的结点附加到Hc的末尾即可。
+         * 
+         * 时间复杂度：O((m+n)*k)。m为Ha的表长，n为Hb的表长，k时Hc的表长。
+         */
+        public LinkList<int> Merge_Tail(LinkList<int> Ha, LinkList<int> Hb) {
+            LinkList<int> Hc = new LinkList<int>();
+            Node<int> p = Ha.Head;
+            Node<int> q = Hb.Head;
+            Node<int> s = new Node<int>();
+            Hc = Hb;
+            Hc.Head = null;
+
+            while (p != null && q != null) {
+                if (p.Data < q.Data) {
+                    s = p;
+                    p = p.Next;
+                } else {
+                    s = q;
+                    q = q.Next;
+                }
+                Hc.Append(s.Data);
+            }
+            if (p == null) {
+                p = q;
+            }
+            while (p != null) {
+                s = p;
+                p = p.Next;
+                Hc.Append(s.Data);
+            }
+            return Hc;
+        }
+        /*
+         * 合并单链表：(头部合并，从小到大)
+         * 算法分析：
+         *      由上可知，把结点附加到单链表的末尾是非常花时间的，因为定位最后一个结点需要从头结点开始遍历。
+         *      而把结点插到单链表的头部要节省很多时间，因为这不需要遍历链表，
+         *      但是由于把结点插入到头部，所以得到的单链表时逆序排列而不是升序排列
+         *      
+         * 时间复杂度：O(m+n)。m是Ha的表长，n是Hb的表长。
+         * */
+        public LinkList<int> Merge_Head(LinkList<int> Ha, LinkList<int> Hb) {
+            LinkList<int> Hc = new LinkList<int>();
+            Node<int> p = Ha.Head;
+            Node<int> q = Hb.Head;
+            Node<int> s = new Node<int>();
+            //两个表都非空
+            while (p != null && q != null) {
+                if (p.Data < q.Data) {
+                    s = p;
+                    p = p.Next;
+                } else {
+                    s = q;
+                    q = q.Next;
+                }
+                s.Next = Hc.Head;
+                Hc.Head = s;
+            }
+            //第二个表非空而第一个表为空
+            if (p == null) {
+                p = q;
+            }
+            //将两个表中剩余元素附加到新表的末尾
+            while (p != null) {
+                s = p;
+                p = p.Next;
+                s.Next = Hc.Head;
+                Hc.Head = s;
+            }
+            return Hc;
+        }
+    }
+
+    /*
+        线性表的定义
+        线性表是由n个相同类型的数据元素构成的有限序列。
+	    线性表通常记为：L = (a1, a2,…,ai-1,ai,ai+1,…,an)。
+	    线性表中数据元素之间存在前后次序的位置关系，除a1与an分别只有一个直接前驱或后驱之外，其他数据元素只有一个直接前驱和直接后驱。
+	    线性表的形式化定义为：L = (D, R)
+            D:是数据元素的有限集合
+            R:时数据元素之间关系的有限集合
+    */
+    //线性表接口
+    public interface IListDS<T> {
+        int GetLength();
+        void Clear();
+        bool IsEmpty();
+        //bool IsFull();
+        void Append(T item);
+        void Insert(T item, int i);
+        T Delete(int i);
+        T GetElem(int i);
+        int Locate(T value);
+    }
+
+    /*
+        保存线性表的最简单自然的方式就是把表中的元素一个接一个的放进顺序的存储单元，这就是线性表的顺序存储。
+        线性表的顺序存储是指在内存中用一块地址连续的空间依次存放线性表的数据元素，用这种方式存储的线性表就叫做顺序表。
+    */
+    //顺序表实现：C#中提供了 IList<T> 接口，这里以实现我们自定义的IListDS<T>接口为例
+    public class SeqList<T> : IListDS<T> {
+
+        //属性
+
+        private int maxsize;    //顺序表的容量
+        private T[] data;       //存储数据表中数据元素的数组
+        private int last;       //指示最后一个元素的位置
+
+        public T this[int index] {
+            get {
+                return data[index];
+            }
+            set {
+                data[index] = value;
+            }
+        }
+
+        public int Maxsize {
+            get {
+                return maxsize;
+            }
+            set {
+                maxsize = value;
+            }
+        }
+
+        public int Last {
+            get {
+                return last;
+            }
+            set {
+                last = value;
+            }
+        }
+
+        //构造器
+
+        public SeqList(int size) {
+            data = new T[size];
+            last = -1;
+            maxsize = size;
+        }
+
+
+        //方法实现
+
+        public int GetLength() {
+            return last + 1;
+        }
+
+        public void Clear() {
+            last = -1;
+        }
+
+        public bool IsEmpty() {
+            if (last == -1) {
+                return true;
+            }
+            return false;
+        }
+
+        public bool IsFull() {
+            if (last == maxsize - 1) {
+                return true;
+            }
+            return false;
+        }
+
+        public void Append(T item) {
+            if (IsFull()) {
+                Console.WriteLine("The list is full!");
+                return;
+            }
+            data[++last] = item;
+        }
+
+        public void Insert(T item, int i) {
+            if (IsFull()) {
+                Console.WriteLine("The list is full!");
+                return;
+            }
+            if (i < 1 || i > last + 2) {
+                Console.WriteLine("The position is error!");
+                return;
+            }
+            if (i == last + 2) {
+                data[last + 1] = item;
+            } else {
+                for (int j = last; j >= i - 1; j--) {
+                    data[j + 1] = data[j];
+                }
+                data[i - 1] = item;
+            }
+        }
+
+        public T Delete(int i) {
+            T temp = default(T);
+            if (IsEmpty()) {
+                Console.WriteLine("The list is Empty!");
+                return temp;
+            }
+            if (i < 1 || i > last + 1) {
+                Console.WriteLine("The position is error!");
+                return temp;
+            }
+            if (i == last + 1) {
+                temp = data[last--];
+            } else {
+                temp = data[i - 1];
+                for (int j = i; j <= last; ++j) {
+                    data[j] = data[j + 1];
+                }
+            }
+            --last;
+            return temp;
+        }
+
+        public T GetElem(int i) {
+            if (IsEmpty() || i < 1 || i > last + 1) {
+                Console.WriteLine("The list is empty or position is error!");
+                return default(T);
+            }
+            return data[i - 1];
+        }
+
+        public int Locate(T value) {
+            if (IsEmpty()) {
+                Console.WriteLine("The list is empty!");
+                return -1;
+            }
+            int i = 0;
+            for (i = 0; i <= last; ++i) {
+                if (value.Equals(data[i])) {
+                    break;
+                }
+            }
+            if (i > last) {
+                return -1;
+            }
+            return i;
+        }
+    }
+
+
+    /*
+        单链表的定义
+	    顺序表示用地址连续的存储单元顺序存储线性表中的各个数据元素，逻辑上相邻的数据元素在物理位置上也相邻，因此，在顺序表中查找任何一个位置上的数据元素非常方便，这是顺序存储的优点，但是，在对顺序表进行插入和删除时，需要通过移动数据元素来实现，影响了运行效率。
+	    而线性表还有另外一种存储结构————链式存储，这样的线性表叫做链表。
+	    链表是用一组任意的存储单元来存储线性表中的数据元素（这组存储单元可以连续，也可是不连续的）。
+    */
+    //单链表结点实现
+    public class Node<T> {
+
+        //属性
+        private T data;         //数据域
+        private Node<T> next;   //引用域
+
+        public T Data {
+            get {
+                return data;
+            }
+            set {
+                data = value;
+            }
+        }
+
+        public Node<T> Next {
+            get {
+                return next;
+            }
+            set {
+                next = value;
+            }
+        }
+
+        //构造器
+        public Node() {
+            data = default(T);
+            next = null;
+        }
+
+        public Node(T value) {
+            data = value;
+            next = null;
+        }
+
+        public Node(T value, Node<T> p) {
+            data = value;
+            next = p;
+        }
+
+        public Node(Node<T> p) {
+            next = p;
+        }
+    }
+
+    //单链表类的实现
+    public class LinkList<T> : IListDS<T> {
+
+        //属性
+        private Node<T> head;       //单链表的头引用
+
+        public Node<T> Head {
+            get {
+                return head;
+            }
+            set {
+                head = value;
+            }
+        }
+
+        //构造器
+        public LinkList() {
+            head = null;
+        }
+
+        //方法实现
+        public int GetLength() {
+            Node<T> p = head;
+            int len = 0;
+            while (p != null) {
+                ++len;
+                p = p.Next;
+            }
+            return len;
+        }
+
+        public void Clear() {
+            //单链表清空后原来结点占用的空间不会一直保留，而由垃圾回收期进行回收。
+            //这与顺序表不一样，顺序表清空操作需要将last置为-1，但为数组分配的空间依然保留，因为数组需要一片连续的空间，而单链表不需要。
+            head = null;
+        }
+
+        public bool IsEmpty() {
+            if (head == null) {
+                return true;
+            }
+            return false;
+        }
+
+        public void Append(T item) {
+            Node<T> q = new Node<T>(item);
+            Node<T> p = new Node<T>();
+            if (head == null) {
+                head = q;
+                return;
+            }
+            p = head;
+            while (p.Next != null) {
+                p = p.Next;
+            }
+            p.Next = q;
+        }
+
+        public void Insert(T item, int i) {
+            if (IsEmpty() || i < 1) {
+                Console.WriteLine("List is empty or position is error!");
+                return;
+            }
+            if (i == 1) {
+                Node<T> q = new Node<T>(item);
+                q.Next = head;
+                head = q;
+                return;
+            } else {
+                Node<T> p = head;
+                Node<T> r = new Node<T>();
+                int j = 1;
+                while (p.Next != null && j < i) {
+                    r = p;
+                    p = p.Next;
+                    ++j;
+                }
+                if (j == i) {
+                    Node<T> q = new Node<T>(item);
+                    q.Next = p;
+                    r.Next = q;
+                }
+            }
+        }
+
+        public T Delete(int i) {
+            if (IsEmpty() || i < 1) {
+                Console.WriteLine("Link is empty or position is error");
+                return default(T);
+            }
+            Node<T> q = new Node<T>();
+            if (i == 1) {
+                q = head;
+                head = head.Next;
+                return q.Data;
+            }
+            Node<T> p = head;
+            int j = 1;
+            while (p.Next != null && j < i) {
+                ++j;
+                q = p;
+                p = p.Next;
+            }
+            if (i == j) {
+                q.Next = p.Next;
+                return p.Data;
+            } else {
+                Console.WriteLine("The ith node is not exist!");
+                return default(T);
+            }
+        }
+
+        public T GetElem(int i) {
+            if (IsEmpty()) {
+                Console.WriteLine("Link is empty!");
+                return default(T);
+            }
+            Node<T> p = new Node<T>();
+            p = head;
+            int j = 1;
+            while (p.Next != null && j < i) {
+                ++j;
+                p = p.Next;
+            }
+            if (j == i) {
+                return p.Data;
+            } else {
+                Console.WriteLine("The ith node is not exist!");
+                return default(T);
+            }
+        
+        }
+
+        public int Locate(T value) {
+            if (IsEmpty()) {
+                Console.WriteLine("Link is empty!");
+                return -1;
+            }
+            Node<T> p = new Node<T>();
+            p = head;
+            int j = 1;
+            while (!p.Data.Equals(value) && p.Next != null) {
+                p = p.Next;
+                ++j;
+            }
+            //return j;//貌似有点问题
+            //以下判断为自行添加
+            if (p.Data.Equals(value)) {
+                return j;
+            } else {
+                Console.WriteLine("LinkList doesn't have this value");
+                return -1;
+            }
+        }
+
+        //附加方法
+        /*
+         * 单链表倒置：
+         *      由于单链表的存储空间不是连续的，所以，它的倒置不能像顺序表那样把第i个结点和n-i个结点交换
+         *      单链表的倒置应该是依次取单链表中的每个结点插入到新的链表中。
+         *      并且，为了节省资源，可以把原链表的头结点作为新链表的头结点
+         *      
+         *      时间复杂度：O((m+n)*k)。m为Ha的表长，n为Hb的表长，k时Hc的表长。
+         *      
+         */
+        //public void Reverse() {
+        //    Node<T> p = head.Next;
+        //    Node<T> q = new Node<T>();
+        //    head.Next = null;
+        //    while (p != null) {
+        //        q = p;
+        //        p = p.Next;
+        //        q.Next = head.Next;
+        //        head.Next = q;
+        //    }
+        //}
+        public void Reverse() {
+            Node<T> r = head;
+            Node<T> p = head.Next;
+            Node<T> q = new Node<T>();
+            while (p != null) {
+                q = p.Next;
+                p.Next = r;
+                r = p;
+                p = q;
+            }
+            head.Next = null;
+            head = r;
+        }
+        /*
+        * 链表元素去重
+        * 题目要求：
+        *      一个存储整数的单链表Ha，试构造单链表Hb，要求单链表Hb中只包含单链表Ha中所有值不相同的结点。
+        *      (也可以将该方法直接写入LinkList类内部，这里便不需要Ha参数)
+        * 算法思路：
+        *      先申请一个结点作为Hb的头结点，然后把Ha的第1个结点插入到Hb的头部，
+        *      然后从Ha的第2个结点起，每一个结点的数据域的值域Hb中的每一个结点的数据域的值进行比较，
+        *      如果不相同，则把该结点插入到Hb的头部。
+        *      （注意：如果没有明确的要求顺序，插入头部可以缩减大量的时间，提高效率）
+        *      
+        * 时间复杂度：O(m+n)。m是Ha的表长，n是Hb的表长。
+        * */
+        public LinkList<T> Purge() {
+            LinkList<T> Hb = new LinkList<T>();
+            Node<T> p = head;
+            Node<T> q = new Node<T>();
+            Node<T> s = new Node<T>();
+            s = p;
+            p = p.Next;
+            s.Next = null;
+            Hb.Head = s;
+            while (p != null) {
+                s = p;
+                p = p.Next;
+                q = Hb.Head;
+                while (q != null && !q.Data.Equals(s.Data)) {
+                    q = q.Next;
+                }
+                if (q == null) {
+                    s.Next = Hb.head;
+                    Hb.head = s;
+                }
+            }
+            return Hb;
+        }
+    }
+
+    /*
+     * 双向链表的定义
+     *      双向链表结点的定义与单链表的结点定义相似，只是，双向链表多个了一字段prev。
+     *      
+	 *      单向列表找后继结点的时间复杂度为O(1)。
+     *      但是要找某个结点的直接前继结点，只能从表头开始遍历各结点，
+     *      如果某个结点的Next等于该结点，那么这个结点就是该结点的直接前驱结点。
+     *      此时，时间复杂度为O(n)，n为单链表的长度。
+     *      
+	 *      而双向链表就是在单链表的基础上，不仅保留了保存直接后继结点的地址，叫next，
+     *      还多了一个保存直接前驱结点的地址，叫prev。
+     *      这样的链表找直接前驱结点和直接后继结点的时间复杂度都是O(1)。
+     * */
+    //双向链表结点类的实现
+    public class DbNode<T> {
+        //属性
+        private T data;             //数据域
+        private DbNode<T> prev;     //前驱引用域
+        private DbNode<T> next;     //后继引用域
+
+        public T Data {
+            get {
+                return data;
+            }
+            set {
+                data = value;
+            }
+        }
+        public DbNode<T> Prev {
+            get {
+                return prev;
+            }
+            set {
+                prev = value;
+            }
+        }
+        public DbNode<T> Next {
+            get {
+                return next;
+            }
+            set {
+                next = value;
+            }
+        }
+
+        //构造器
+        public DbNode() {
+            data = default(T);
+            next = null;
+        }
+        public DbNode(T value) {
+            data = value;
+            next = null;
+        }
+        public DbNode(DbNode<T> p) {
+            next = p;
+        }
+        public DbNode(T value, DbNode<T> p) {
+            data = value;
+            next = p;
+        }
+    }
+
+    //双向链表类的实现
+    public class DbLinkList<T> : IListDS<T> {
+        //属性
+        private DbNode<T> head;
+        
+        public DbNode<T> Head {
+            get {
+                return head;
+            }
+            set {
+                head = value;
+            }
+        }
+
+        //构造器
+        public DbLinkList() {
+            head = null;
+        }
+
+        public int GetLength() {
+            DbNode<T> p = head;
+            int len = 0;
+            while (p != null) {
+                ++len;
+                p = p.Next;
+            }
+            return len;
+        }
+
+        public void Clear() {
+            head = null;
+        }
+
+        public bool IsEmpty() {
+            if (head == null) {
+                return true;
+            }
+            return false;
+        }
+
+        public void Append(T item) {
+            DbNode<T> q = new DbNode<T>(item);
+            DbNode<T> p = new DbNode<T>();
+            if (head == null) {
+                head = q;
+                return;
+            }
+            p = head;
+            while (p.Next != null) {
+                p = p.Next;
+            }
+            p.Next = q;
+            q.Prev = p;
+        }
+
+        //双向链表的插入分为在结点之前插入和在结点之后插入。此处以在结点之后插入为例。
+        public void Insert(T item, int i) {
+            if (IsEmpty() || i < 1) {
+                Console.WriteLine("Double LinkList is Empty or Position is error!");
+                return;
+            }
+            if (i == 1) {
+                DbNode<T> q = new DbNode<T>(item);
+                q.Next = head;
+                head.Prev = q;
+                head = q;
+                return;
+            } else {
+                DbNode<T> p = head;
+                DbNode<T> r = new DbNode<T>();
+                int j = 1;
+                while (p.Next != null && j < i) {
+                    ++j;
+                    r = p;
+                    p = p.Next;
+                }
+                if (j == i) {
+                    DbNode<T> q = new DbNode<T>(item);
+                    r.Next.Prev = q;
+                    q.Prev = r;
+                    q.Next = r.Next;
+                    r.Next = q;
+                }
+            }
+        }
+
+        public T Delete(int i) {
+            if (IsEmpty() || i < 1) {
+                Console.WriteLine("Double LinkList is empty or position is error!");
+                return default(T);
+            }
+            DbNode<T> q = new DbNode<T>();
+            if (i == 1) {
+                q = head;
+                head = head.Next;
+                return q.Data;
+            }
+            DbNode<T> p = head;
+            int j = 1;
+            while (p.Next != null && j < i) {
+                q = p;
+                p = p.Next;
+                ++j;
+            }
+            if (i == j) {
+                q.Next = p.Next;
+                p.Next.Prev = p.Prev;
+                return q.Data;
+            }
+            Console.WriteLine("The ith node is not exist!");
+            return default(T);
+        }
+
+        public T GetElem(int i) {
+            if (IsEmpty() || i < 1 || i > GetLength()) {
+                Console.WriteLine("Double LinkList is Empty or position is error!");
+                return default(T);
+            }
+            DbNode<T> p = new DbNode<T>();
+            p = head;
+            //int j = 1;
+            //while (p.Next != null && j < i) {
+            //    ++j;
+            //    p = p.Next;
+            //}
+            //if (j == i) {
+            //    return p.Data;
+            //}
+            //Console.WriteLine("The ith node is not exist!");
+            //return default(T);
+            //***********代码优化***********
+            for (int j = 1; j < i; j++) {
+                p = p.Next;
+            }
+            return p.Data;
+        }
+
+        public int Locate(T value) {
+            if (IsEmpty()) {
+                Console.WriteLine("Double LinkList is empty!");
+                return -1;
+            }
+            int j = 1;
+            DbNode<T> p = head;
+            while (p.Next != null && !p.Data.Equals(value)) {
+                p = p.Next;
+                ++j;
+            }
+            if (p.Data.Equals(value)) {
+                return j;
+            }
+            Console.WriteLine("Double LinkList doesn't have this value");
+            return -1;
+        }
+
+        //双向链表的倒置
+        public void Reverse() {
+            DbNode<T> p = head;
+            DbLinkList<T> DL = new DbLinkList<T>();
+            while (p.Next != null) {
+                p = p.Next;
+            }
+            while (p != null) {
+                DL.Append(p.Data);
+                p = p.Prev;
+            }
+            head = DL.Head;
+            DL.head = null;
+        }
+    }
+
+    /*
+     * 循环链表的定义
+     *      有时候不需要链表中有明显的头尾结点，在这种情况下，可能需要方便的从最后一个结点访问到第一个结点。
+     *      此时，最后一个结点的引用域不是空引用，而是保存的第一个结点的地址
+     *      （如果该链表带结点，则保存的是头结点的地址），也就是头引用的值。
+     *      
+     *      循环链表的基本操作与单链表大致相同，
+     *      只是判断链表结束的条件并不是判断结点的引用域是否为空，而是判断结点的引用域是否为头引用。
+     *      
+     *      循环链表在代码类上与单链表几乎完全一样，唯一的区别就是，单链表尾部指向null，循环链表尾部指向head。
+     *      所以，这里结点类依然可以使用单链表的结点类。
+     * */
+    public class LoopLinkList<T> : IListDS<T> {
+        //属性
+        private Node<T> head;
+
+        public Node<T> Head {
+            get {
+                return head;
+            }
+            set {
+                head = value;
+                head.Next = head;
+            }
+        }
+
+        //构造器
+        public LoopLinkList() {
+            head = null;
+        }
+
+        //方法实现
+        public int GetLength() {
+            /*
+             *  判断循环链表结束的条件不是引用域是否为空，而是引用域是否为头引用。
+             *  添加删除等方法同样需要注意最后一个结点的引用域需要指向头引用
+             *  因为与单链表不同的地方在于，循环链表必须判断p.Next != head，而不能仅仅仿照单链表将p != null改为p != head
+             *  而此时循环链表的len初始值需要 = 1. 所以其 len = 0的情况需要单独去判断
+             *  */
+            Node<T> p = head;
+            if (IsEmpty()) {
+                return 0;
+            }
+            int len = 1;
+            while (p.Next != head) {
+                ++len;
+                p = p.Next;
+            }
+            return len;
+        }
+
+        public void Clear() {
+            head = null;
+        }
+
+        public bool IsEmpty() {
+            if (head == null) {
+                return true;
+            }
+            return false;
+        }
+
+        public void Append(T item) {
+            Node<T> q = new Node<T>(item);
+            Node<T> p = new Node<T>();
+            if (IsEmpty()) {
+                head = q;
+                q.Next = head;
+                return;
+            }
+            p = head;
+            while (p.Next != head) {
+                p = p.Next;
+            }
+            p.Next = q;
+            q.Next = head;
+        }
+
+        public void Insert(T item, int i) {
+            if (IsEmpty() || i < 1 || i > GetLength() + 1) {
+                Console.WriteLine("LoopLinkList is empty or position is error!");
+                return;
+            }
+            if (i == 1) {
+                Node<T> q = new Node<T>(item);
+                Node<T> t = head;
+                while (t.Next != head) {
+                    t = t.Next;
+                }
+                t.Next = q;
+                q.Next = head;
+                head = q;
+                return;
+            }
+            if (i == GetLength() + 1) {
+                Append(item);
+                return;
+            }
+            Node<T> p = head;
+            Node<T> r = new Node<T>();
+            for (int j = 1; j < i; j++) {
+                r = p;
+                p = p.Next;
+            }
+            Node<T> s = new Node<T>(item);
+            s.Next = p;
+            r.Next = s;
+        }
+
+        public T Delete(int i) {
+            if (IsEmpty() || i < 1 ) {
+                Console.WriteLine("LoopLinkList is empty or position is error!");
+                return default(T);
+            }
+            Node<T> p = head;
+            Node<T> s = head;
+            if (i == 1) {
+                while (p.Next != head) {
+                    p = p.Next;
+                }
+                head = head.Next;
+                p.Next = head;
+                return s.Data;
+            }
+            for (int j = 1; j < i - 1; j++) {
+                p = p.Next;
+            }
+            s = p.Next;
+            p.Next = p.Next.Next;
+            return s.Data;
+        }
+
+        public T GetElem(int i) {
+            if (IsEmpty() || i < 1) {
+                Console.WriteLine("LoopLinkList is empty or position is error!");
+                return default(T);
+            }
+            Node<T> p = head;
+            for (int j = 1; j < i; j++) {
+                p = p.Next;
+            }
+            return p.Data;
+        }
+
+        public int Locate(T value) {
+            if (IsEmpty()) {
+                Console.WriteLine("LoopLinkList is empty!");
+                return - 1;
+            }
+            Node<T> p = head;
+            int index = 1;
+            while (p.Next != head) {
+                if (p.Data.Equals(value)) {
+                    return index;
+                } else {
+                    index++;
+                    p = p.Next;
+                }
+            }
+            if (p.Data.Equals(value)) {
+                return index;
+            }
+            return -1;
+        }
+    }
+}
